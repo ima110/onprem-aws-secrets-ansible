@@ -248,14 +248,5 @@ Common issues:
 
 ---
 
-## 🤝 Contributing
 
-Contributions are welcome!
-Please review the **contributing guidelines** and **code of conduct** before submitting PRs or issues.
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
 
