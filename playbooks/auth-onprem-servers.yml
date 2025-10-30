@@ -1,0 +1,28 @@
+---
+- name: Authenticate to on-prem servers using temporary credentials
+  hosts: aws_management
+  gather_facts: yes
+  vars:
+    target_server: "{{ server_name }}"
+    auth_type: "{{ auth_method | default('ssh') }}"
+
+  tasks:
+    - name: Retrieve credentials and generate session
+      include_role:
+        name: aws-secrets-manager
+        tasks_from: retrieve
+      vars:
+        server_name: "{{ target_server }}"
+
+    - name: Display connection information
+      debug:
+        msg: |
+          Server: {{ target_server }}
+          Session token generated
+          Use: ./scripts/onprem-auth.sh --{{ auth_type }} {{ target_server }}
+
+    - name: Execute remote command if provided
+      command: >
+        ./scripts/onprem-auth.sh --{{ auth_type }} {{ target_server }} 
+        "{{ remote_command }}"
+      when: remote_command is defined

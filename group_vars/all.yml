@@ -1,0 +1,20 @@
+---
+# AWS Configuration
+aws_region: "us-east-1"
+aws_secret_prefix: "onprem-server"
+
+# Security Settings
+temp_token_duration: 3600
+credential_rotation_days: 90
+session_timeout: 7200
+
+# Script paths
+scripts_dir: "/opt/aws-secrets-manager"
+bin_dir: "/usr/local/bin"
+log_dir: "/var/log/aws-secrets"
+
+# User mapping
+user_mapping:
+  admin: "temp-admin"
+  appuser: "temp-appuser"
+  dbuser: "temp-dbuser"

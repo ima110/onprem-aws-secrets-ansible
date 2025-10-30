@@ -1,0 +1,43 @@
+---
+- name: Create scripts directory
+  file:
+    path: "{{ scripts_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Install AWS CLI dependencies
+  package:
+    name:
+      - python3
+      - python3-pip
+      - jq
+    state: present
+
+- name: Install AWS CLI via pip
+  pip:
+    name: awscli
+    state: present
+
+- name: Copy AWS setup script
+  template:
+    src: credential-script.j2
+    dest: "{{ scripts_dir }}/aws-credential-helper.sh"
+    mode: '0755'
+
+- name: Copy session manager script
+  template:
+    src: session-manager.j2
+    dest: "{{ scripts_dir }}/session-manager.sh"
+    mode: '0755'
+
+- name: Create symlinks in bin directory
+  file:
+    src: "{{ scripts_dir }}/{{ item.src }}"
+    dest: "{{ bin_dir }}/{{ item.dest }}"
+    state: link
+    force: yes
+  loop:
+    - { src: 'aws-credential-helper.sh', dest: 'get-onprem-creds' }
+    - { src: 'session-manager.sh', dest: 'onprem-session' }

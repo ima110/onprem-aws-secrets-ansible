@@ -1,0 +1,32 @@
+---
+- name: Retrieve credentials from AWS Secrets Manager
+  community.aws.aws_secret:
+    name: "{{ aws_secret_prefix }}/{{ server_name }}"
+    region: "{{ aws_region }}"
+  register: secret_result
+  delegate_to: localhost
+
+- name: Create temporary credential file
+  copy:
+    content: |
+      # Temporary credentials for {{ server_name }}
+      USERNAME={{ secret_result.secret.username }}
+      PASSWORD={{ secret_result.secret.password }}
+      SERVER_TYPE={{ secret_result.secret.server_type }}
+      TOKEN_EXPIRY={{ ansible_date_time.epoch | int + temp_token_duration }}
+    dest: "{{ scripts_dir }}/temp-creds-{{ server_name }}.env"
+    mode: '0600'
+
+- name: Generate session token
+  shell: |
+    {{ scripts_dir }}/session-manager.sh generate \
+    --server {{ server_name }} \
+    --duration {{ temp_token_duration }}
+  register: session_token
+  changed_when: false
+
+- name: Store session token
+  copy:
+    content: "{{ session_token.stdout }}"
+    dest: "{{ scripts_dir }}/session-{{ server_name }}.token"
+    mode: '0600'

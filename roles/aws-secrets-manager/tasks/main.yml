@@ -1,0 +1,12 @@
+---
+- name: Include setup tasks
+  include_tasks: setup.yml
+  tags: setup
+
+- name: Include retrieval tasks
+  include_tasks: retrieve.yml
+  tags: retrieve
+
+- name: Include rotation tasks
+  include_tasks: rotate.yml
+  tags: rotate
